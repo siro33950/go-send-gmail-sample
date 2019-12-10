@@ -1,1 +1,1 @@
-# go-send-gmial-sample
+# go-send-gmail-sample
