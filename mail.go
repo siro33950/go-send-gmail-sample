@@ -18,7 +18,8 @@ func main() {
 		log.Printf("[ERROR] Failed to process create service: %s", err)
 		return
 	}
-	temp := []byte("From: 'hoge@gmal.com'\r\n" +
+	// Fromには偽装したアドレスもしくはそのaliasを指定する
+	temp := []byte("From: hoge@gmal.com\r\n" +
 		"To: fuga@gmail.com\r\n" +
 		"Subject: testSubject\r\n" +
 		"\r\ntestBody")
@@ -27,7 +28,9 @@ func main() {
 	message.Raw = strings.Replace(message.Raw, "/", "_", -1)
 	message.Raw = strings.Replace(message.Raw, "+", "-", -1)
 	message.Raw = strings.Replace(message.Raw, "=", "", -1)
-	_, err = service.Users.Messages.Send("hoge@gmal.com", &message).Do()
+	
+	// 偽装したアドレスでAPIを叩く
+	_, err = service.Users.Messages.Send("me", &message).Do()
 	if err != nil {
 		log.Printf("[ERROR] Failed to process send message: %s", err)
 		return
@@ -48,8 +51,8 @@ func createService() (service *gmail.Service, err error) {
 		log.Printf("[ERROR] Failed to process get jwt config: %s", err)
 		return nil, err
 	}
-	// 送信元のアドレスを指定
-	// 別のアドレスを指定すると実行時エラーになる
+	// 認証を偽装するアドレス
+	// 指定したアドレスで認証したことになる
 	config.Subject = "hoge@gmal.com"
 
 	ctx := context.Background()
